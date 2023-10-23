@@ -1,0 +1,27 @@
+
+name: Test and deploy
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubunt-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: ruby/setup-ruby@1
+        with:
+          ruby-version: 2.6.8
+
+      - name: Run bundle install
+        run: |
+          bundle config --local path vendor/bundle
+          bundle config --local without production
+
+      - run: RAILS_ENV=test bundle exec rails asset:precompile
+
+      - run: bundle exec railst test
